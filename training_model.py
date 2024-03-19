@@ -16,7 +16,7 @@ def create_x_test(n, stock, windown_size):
 
     # now: 현재 날짜, before: n년 전
     now = datetime.now()
-    before = now - relativedelta(month=n)
+    before = now - relativedelta(year=n)
 
     # before_day 부터 now_day 까지 정보를 가져오기 위해 날짜 값 변환
     now_day = now.strftime("%Y-%m-%d")
@@ -77,67 +77,42 @@ def training_model(n, stock, windown_size):
               epochs=10)
 
     # 모델(파일) 저장
-    model.save('predict_' + stock + '.h5')
-
-
-# 예측을 위한 데이터를 생성합니다.
-def create_predict_data(n, stock, windown_size):
-    yf.pdr_override()
-
-    now = datetime.now()
-    before = now - relativedelta(month=n)
-
-    now_day = now.strftime("%Y-%m-%d")
-    before_day = before.strftime("%Y-%m-%d")
-
-    stock_data = pdr.get_data_yahoo(stock, start=before_day, end=now_day)
-
-    close_prices = stock_data['Close'].values
-
-    result_list = []
-    for i in range(len(close_prices) - (windown_size + 1)):
-        result_list.append(close_prices[i: i + (windown_size + 1)])
-
-    normal_data = []
-    for window in result_list:
-        window_list = [((float(p) / float(window[0])) - 1) for p in window]
-        normal_data.append(window_list)
-
-    result_list = np.array(normal_data)
-
-    return close_prices, window, result_list
-
-
-# 예측한 값의 화폐 단위를 조정해 줍니다.
-def currency_unit_adjustment(predictions, window):
-    pred_price = []
-    for i in predictions:
-        pred_price.append((i + 1) * window[0])
-
-    return pred_price
+    model.save('model/' + stock + '/predict_' + stock + '.keras')
 
 
 # stock 종목의 다음날 종가를 예측하여 "상향", "하향", "양호" 값으로 반환합니다.
-def predict_stock(n, stock, windown_size):
+def get_last_data(n_days, stock):
+    ticker = yf.Ticker(stock)
+
+    last_day_price = ticker.history(interval='1d', period='3mo').tail(n_days)['Close'].values
+
+    normal_data = []
+    for p in last_day_price:
+        normal_data.append(((float(p) / float(last_day_price[0])) - 1))
+
+    return np.array(normal_data), last_day_price
+
+
+def predict_stock(stock, windown_size):
     # 모델 파일 경로
-    model_path = 'predict_' + stock + '.h5'
+    model_path = 'model/' + stock + '/predict_' + stock + '.keras'
     # 모델 불러오기
     model = load_model(model_path)
-    close_prices, window, result_list = create_predict_data(n, stock, windown_size)
 
-    row = int(round(result_list.shape[0] * 0.9))
-    x_test = result_list[row:, :-1]
-    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-    x_test.shape
+    normal_data, last_day_price = get_last_data(windown_size, stock)
+    predict_data = np.reshape(normal_data, (1, windown_size, 1))
 
-    predictions = model.predict(x_test)
-    pre_price = currency_unit_adjustment(predictions, window)
+    predictions = model.predict(predict_data)
+    print(predictions)
 
-    pre_close_price = close_prices[-1] - pre_price[-1]
-    print(pre_close_price)
+    pre_price = (predictions + 1) * last_day_price[0]
+
+    pre_close_price = pre_price - last_day_price[-1]
+    print('전일종가:', last_day_price[-1], '예측종가:', pre_price, '차액:', pre_close_price)
+
     if pre_close_price < 0:
-        return "하향"
+        return -1
     elif pre_close_price > 0:
-        return "상향"
+        return 1
     else:
-        return "양호"
+        return 0
