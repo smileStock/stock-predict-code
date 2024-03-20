@@ -7,8 +7,6 @@ from dateutil.relativedelta import relativedelta
 from pandas_datareader import data as pdr
 import yfinance as yf
 
-# n: n달 전 까지의 정보, stock: 종목 코드, windown_size 일 만큼 학습 후 다음 날의 종가 예측
-
 
 # 학습하기 위한 데이터를 생성하기 위한 함수입니다.
 def create_x_test(n, stock, windown_size):
