@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import pymysql
-from training_model import training_model
+from training_model import training_model, predict_stock
 
 # Flask 객체 인스턴스 생성
 app = Flask(__name__)
@@ -25,14 +25,14 @@ def index():
 def train_model():
     if request.method == 'GET':
         stock = request.args.get('stock')
-        window_size = request.args.get('window_size', 30)  # 기본값으로 30을 사용
-        n = request.args.get('n', 10)  # 기본값으로 10을 사용
+        # window_size = int(request.args.get('window_size', 30))  # 기본값으로 30을 사용
+        # n = int(request.args.get('n', 10))  # 기본값으로 10을 사용
 
         if not stock:  # stock 값이 제공되지 않은 경우 오류 메시지 반환
             return jsonify({'error': 'Stock parameter is missing'}), 400
 
         try:
-            training_model(n, stock, window_size)
+            training_model(10, stock, 30)
 
             return jsonify({'message': 'Model training completed successfully'}), 200
         except Exception as e:
@@ -40,15 +40,16 @@ def train_model():
 
 
 @app.route('/predict_stock', methods=['GET'])
-def predict_stock():
-    stock = request.args.get('stock')
-    window_size = request.args.get('window_size', 30)  # 기본값으로 30을 사용
+def predict_stock_route():
+    if request.method == 'GET':
+        stock = request.args.get('stock')
+        # window_size = request.args.get('window_size', 30)  # 기본값으로 30을 사용
 
-    try:
-        prediction = predict_stock(stock, int(window_size))
-        return jsonify({'stock': stock, 'prediction': prediction}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        try:
+            prediction = predict_stock(stock, 30)
+            return jsonify({'stock': stock, 'prediction': prediction}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
