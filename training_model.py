@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
@@ -73,6 +74,11 @@ def training_model(n, stock, windown_size):
               validation_data=(x_test, y_test),
               batch_size=10,
               epochs=10)
+
+    # 모델을 저장하기 전에 경로 확인 및 생성
+    model_dir = 'model/' + stock
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)  # 경로가 없으면 생성
 
     # 모델(파일) 저장
     model.save('model/' + stock + '/predict_' + stock + '.keras')
