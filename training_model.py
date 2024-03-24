@@ -1,8 +1,7 @@
 import os
 import numpy as np
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
-from tensorflow.keras.models import load_model
+from keras.models import Sequential, load_model
+from tensorflow.keras.layers import LSTM, Dense
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pandas_datareader import data as pdr
