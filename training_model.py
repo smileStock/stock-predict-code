@@ -114,8 +114,8 @@ def predict_stock(stock, windown_size):
     print('전일종가:', last_day_price[-1], '예측종가:', pre_price, '차액:', pre_close_price)
 
     if pre_close_price < 0:
-        return -1
+        return 2    # down
     elif pre_close_price > 0:
-        return 1
+        return 3    # up
     else:
-        return 0
+        return 1    # stay
