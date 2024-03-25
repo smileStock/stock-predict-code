@@ -14,7 +14,7 @@ def create_x_test(n, stock, windown_size):
 
     # now: 현재 날짜, before: n년 전
     now = datetime.now()
-    before = now - relativedelta(year=n)
+    before = now - relativedelta(years=n)
 
     # before_day 부터 now_day 까지 정보를 가져오기 위해 날짜 값 변환
     now_day = now.strftime("%Y-%m-%d")
