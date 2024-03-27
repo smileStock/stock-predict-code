@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_restx import Api, Resource, reqparse
 import pymysql
@@ -57,6 +58,13 @@ class PredictStock(Resource):
     def get(self):
         args = predict_stock_parser.parse_args()
         stock = args['stock']
+
+        # 특정 파일의 경로 지정
+        file_path = 'model/' + stock + '/predict_' + stock + '.keras'
+
+        # 파일 존재 여부 확인
+        if not os.path.exists(file_path):
+            training_model(10, stock, 30)
 
         try:
             prediction = predict_stock(stock, 30)
