@@ -1,8 +1,12 @@
 import os
 from flask import Flask
 from flask_restx import Api, Resource, reqparse
+from threading import Thread
 import pymysql
 from training_model import training_model, predict_stock
+
+# 전역 변수로 스레드 실행 상태 추적
+training_in_progress = {}
 
 # Flask 객체 인스턴스 생성
 app = Flask(__name__)
@@ -56,6 +60,7 @@ class TrainModel(Resource):
 class PredictStock(Resource):
     @api.expect(predict_stock_parser)
     def get(self):
+        global training_in_progress
         args = predict_stock_parser.parse_args()
         stock = args['stock']
 
@@ -64,8 +69,19 @@ class PredictStock(Resource):
 
         # 파일 존재 여부 확인
         if not os.path.exists(file_path):
-            training_model(10, stock, 30)
-            return {'stock': stock, 'prediction': 0}, 200
+            if training_in_progress.get(stock, False):
+                # 이미 트레이닝 중이라면 -1 반환
+                return {'stock': stock, 'prediction': -1}, 200
+            else:
+                # 트레이닝 시작 전에 상태를 True로 설정
+                training_in_progress[stock] = True
+
+                def train_and_reset():
+                    training_model(10, stock, 30)
+                    training_in_progress[stock] = False
+                thread = Thread(target=training_model, args=(10, stock, 30))
+                thread.start()
+                return {'stock': stock, 'prediction': 0}, 200
         else:
             try:
                 prediction = predict_stock(stock, 30)
