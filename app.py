@@ -65,12 +65,13 @@ class PredictStock(Resource):
         # 파일 존재 여부 확인
         if not os.path.exists(file_path):
             training_model(10, stock, 30)
-
-        try:
-            prediction = predict_stock(stock, 30)
-            return {'stock': stock, 'prediction': prediction}, 200
-        except Exception as e:
-            return {'error': str(e)}, 500
+            return {'stock': stock, 'prediction': 0}, 200
+        else:
+            try:
+                prediction = predict_stock(stock, 30)
+                return {'stock': stock, 'prediction': prediction}, 200
+            except Exception as e:
+                return {'error': str(e)}, 500
 
 
 if __name__ == '__main__':
