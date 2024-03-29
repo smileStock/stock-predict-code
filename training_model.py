@@ -94,7 +94,7 @@ def training_model(n, stock, windown_size):
 
 # stock 종목의 다음날 종가를 예측하여 "상향", "하향", "양호" 값으로 반환합니다.
 def get_last_data(n_days, stock):
-    ticker = yf.Ticker(stock)
+    ticker = yf.Ticker(stock + '.KS')
 
     last_day_price = ticker.history(interval='1d', period='3mo').tail(n_days)['Close'].values
 
