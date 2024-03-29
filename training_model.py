@@ -94,9 +94,18 @@ def training_model(n, stock, windown_size):
 
 # stock 종목의 다음날 종가를 예측하여 "상향", "하향", "양호" 값으로 반환합니다.
 def get_last_data(n_days, stock):
-    ticker = yf.Ticker(stock + '.KS')
+    now = datetime.now()
+    before = now - relativedelta(months=3)  # Fetch data from the past 3 months
 
-    last_day_price = ticker.history(interval='1d', period='3mo').tail(n_days)['Close'].values
+    # Format the dates
+    now_day = now.strftime("%Y-%m-%d")
+    before_day = before.strftime("%Y-%m-%d")
+
+    # Fetch stock data for the past 3 months
+    stock_data = fdr.DataReader(stock, start=before_day, end=now_day)
+
+    # Select the last n_days of the fetched data
+    last_day_price = stock_data['Close'].values[-n_days:]
 
     normal_data = []
     for p in last_day_price:
