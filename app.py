@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restx import Api, Resource, reqparse
 from threading import Thread
 import pymysql
-from training_model import training_model, predict_stock
+from training_model import training_model, predict_stock, create_x_test
 
 # 전역 변수로 스레드 실행 상태 추적
 training_in_progress = {}
@@ -50,8 +50,11 @@ class TrainModel(Resource):
             return {'error': 'Stock parameter is missing'}, 400
 
         try:
-            training_model(10, stock, 30)
-            return {'message': 'Model training completed successfully'}, 200
+            result = training_model(10, stock, 30)
+            if result == -2:
+                return {'stock': stock, 'return': -2}, 200
+            else:
+                return {'message': 'Model training completed successfully'}, 200
         except Exception as e:
             return {'error': str(e)}, 500
 
@@ -69,6 +72,12 @@ class PredictStock(Resource):
 
         # 파일 존재 여부 확인
         if not os.path.exists(file_path):
+            try:
+                x_train, y_train, x_test, y_test, windown_size = create_x_test(10, stock, 30)
+            except ValueError as e:
+                print(e)  # 예외 메시지 출력 또는 로깅
+                return {'stock': stock, 'return': -2}, 200
+
             if training_in_progress.get(stock, False):
                 # 이미 트레이닝 중이라면 -1 반환
                 return {'stock': stock, 'prediction': -1}, 200

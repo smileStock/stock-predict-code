@@ -24,6 +24,9 @@ def create_x_test(n, stock, windown_size):
     stock_data = pdr.get_data_yahoo(stock, start=before_day, end=now_day)
     # close_prices: stock 종목의 n년 데이테에서 종가 추출
     close_prices = stock_data['Close'].values
+    # close_prices가 비어 있는 경우 예외 발생
+    if len(close_prices) == 0:
+        raise ValueError("No data available for stock: " + stock)
 
     # result_list: n년치 데이터를 windown일 단위로 묶어 하나의 학습 데이터 세트로 가공
     result_list = []
@@ -58,7 +61,11 @@ def create_x_test(n, stock, windown_size):
 
 # 주가 예측 모델을 학습하여 생성하고, 파일로 저장합니다.
 def training_model(n, stock, windown_size):
-    x_train, y_train, x_test, y_test, windown_size = create_x_test(n, stock, windown_size)
+    try:
+        x_train, y_train, x_test, y_test, windown_size = create_x_test(n, stock, windown_size)
+    except ValueError as e:
+        print(e)  # 예외 메시지 출력 또는 로깅
+        return -2  # 데이터가 없는 경우 -2 반환
 
     # LSTM 모델 생성
     model = Sequential()
