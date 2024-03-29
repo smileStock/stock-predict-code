@@ -4,7 +4,8 @@ from keras.models import Sequential, load_model
 from tensorflow.keras.layers import LSTM, Dense
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from pandas_datareader import data as pdr
+# from pandas_datareader import data as pdr
+import FinanceDataReader as fdr
 import yfinance as yf
 
 
@@ -21,7 +22,8 @@ def create_x_test(n, stock, windown_size):
     before_day = before.strftime("%Y-%m-%d")
 
     # stock_data: stock 종목의 n년 데이터
-    stock_data = pdr.get_data_yahoo(stock, start=before_day, end=now_day)
+    # stock_data = pdr.get_data_yahoo(stock, start=before_day, end=now_day)
+    stock_data = fdr.DataReader(stock, start=before_day, end=now_day)
     # close_prices: stock 종목의 n년 데이테에서 종가 추출
     close_prices = stock_data['Close'].values
     # close_prices가 비어 있는 경우 예외 발생
