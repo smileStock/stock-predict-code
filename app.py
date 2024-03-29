@@ -81,7 +81,7 @@ class PredictStock(Resource):
                         training_model(10, stock, 30)
                     finally:
                         training_in_progress[stock] = False
-                thread = Thread(target=train_and_reset, args=(10, stock, 30))
+                thread = Thread(target=train_and_reset)
                 thread.start()
                 return {'stock': stock, 'prediction': 0}, 200
         else:
