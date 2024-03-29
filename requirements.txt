@@ -16,12 +16,14 @@ mysqlclient==2.2.4
 numpy==1.26.4
 pandas==2.2.1
 pandas_datareader==0.10.0
+plotly==5.20.0
 pymysql==1.1.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
 requests==2.31.0
 requests-file==2.0.0
 six==1.16.0
+tenacity==8.2.3
 tensorflow==2.16.1
 tqdm==4.66.2
 tzdata==2024.1
