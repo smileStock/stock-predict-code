@@ -14,9 +14,10 @@
 - 제무 분석 : Dart API로 종목의 제무 정보를 가져오고, Chat GPT API를 통해 제무 정보를 분석합니다.
 - CI : Jenkins를 활용해 Github repo의 코드 변화를 감지해 ECR에 지속적으로 서비스의 이미지를 푸쉬합니다.
 - CD : 푸쉬한 이미지를 Argo CD가 감지해 EKS 클러스터 내부 POD로 지속적인 배포를 합니다.
-<br>
+
 [서비스 흐름 영상](https://foreveryoung97.tistory.com/130)
 <br>
+
 ## 담당 기능
-[종가 예측 개발 회고](https://foreveryoung97.tistory.com/134)
+[종가 예측 개발 회고](https://foreveryoung97.tistory.com/134) <br>
 [Continuous Integration 개발 회고](https://foreveryoung97.tistory.com/135)
