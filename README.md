@@ -16,8 +16,4 @@
 - CD : 푸쉬한 이미지를 Argo CD가 감지해 EKS 클러스터 내부 POD로 지속적인 배포를 합니다.
 
 [서비스 흐름 영상](https://foreveryoung97.tistory.com/130)
-<br>
-
-## 담당 기능
-[종가 예측 개발 회고](https://foreveryoung97.tistory.com/134) <br>
-[Continuous Integration 개발 회고](https://foreveryoung97.tistory.com/135)
+[개발 회고](https://foreveryoung97.tistory.com/category/SmileStock) <br>
